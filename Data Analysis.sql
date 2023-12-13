@@ -1,10 +1,5 @@
---SELECT * FROM CovidProjectPortfolio..CovidVaccinations
---ORDER BY 3, 4 ASC
 
-SELECT * FROM CovidProjectPortfolio..CovidDeaths
-ORDER BY 3, 4 ASC
-
--- Select Data that we are going to be using
+-- Select Data that we are going to be using and take a look
 
  SELECT location, date, total_cases, new_cases, total_deaths, population
 FROM CovidProjectPortfolio..CovidDeaths
@@ -13,6 +8,7 @@ ORDER BY 1,2
 
 --Looking for death percentage: total_deaths/total_cases
 --Shows liklihood of dying if you are infected in your country	
+	 
 SELECT location, date, total_cases, total_deaths, ROUND((total_deaths/total_cases)*100, 2) as DeathPercentage
 FROM CovidProjectPortfolio..CovidDeaths
 WHERE location like 'Spain'
@@ -53,6 +49,7 @@ WHERE continent is not NULL
 GROUP BY location
 ORDER BY HighestDeathCountPerMillion DESC
 
+	 
 --Showing Continents with Highest Death Count 
 
 Select continent, sum(new_deaths) AS HighestDeathCount
@@ -60,8 +57,8 @@ From CovidProjectPortfolio..CovidDeaths
 WHERE continent is not NULL
 GROUP BY continent
 ORDER BY HighestDeathCount DESC
-
---This is actually shows similar - total deaths by continent and other groups such as level of income
+	 
+--This actually shows similar - total deaths by continent and other groups such as level of income
 
 Select location, MAX(total_deaths) AS HighestDeathCount
 From CovidProjectPortfolio..CovidDeaths
@@ -69,6 +66,7 @@ WHERE continent is NULL
 GROUP BY location
 ORDER BY HighestDeathCount DESC
 
+	 
 --Showing continent with the highest death count per population
 
 Select location, MAX(total_deaths) AS HighestDeathCount, max(population) as Population, ROUND((max(total_deaths)/max(population)*100),3) AS DeathRate
@@ -77,7 +75,9 @@ WHERE continent is NULL
 GROUP BY location
 ORDER BY DeathRate DESC
 
+	 
 -- Showing continent with the highest death count per population using data from countries only 
+	 
 SELECT 
 	HighestDeathCount.continent, 
 	HighestDeathCount.DeathCount, 
@@ -106,15 +106,19 @@ ORDER BY HighestDeathRate DESC
 
 
 -- GLOBAL NUMBERS
+	 
 -- Deaths to Cases ratio by date
+	 
 SELECT date, SUM(new_cases) as Cases, SUM(new_deaths) AS Deaths, ROUND(SUM(new_deaths)/SUM(new_cases)*100, 2) as DeathPercentage
 FROM CovidProjectPortfolio..CovidDeaths
 WHERE continent is not NULL and date BETWEEN '2020-01-22' AND '2023-11-22'
 GROUP BY date
 ORDER BY 1,2
 
+	 
 --Deaths to cases ratio for the World sinse the beginning of Covid-10 pandemia
-SELECT SUM(new_cases) as Cases, SUM(new_deaths) AS Deaths, ROUND(SUM(new_deaths)/SUM(new_cases)*100, 2) as DeathPercentage
+
+	 SELECT SUM(new_cases) as Cases, SUM(new_deaths) AS Deaths, ROUND(SUM(new_deaths)/SUM(new_cases)*100, 2) as DeathPercentage
 FROM CovidProjectPortfolio..CovidDeaths
 WHERE continent is not NULL and date BETWEEN '2020-01-22' AND '2023-11-22'
 ORDER BY 1,2
@@ -138,8 +142,7 @@ GROUP BY continent, location, population
 
 
 
-
--- TEMP TABLE
+-- USE TEMP TABLE
 DROP Table if exists #PercentPopulationVaccinated
 Create Table #PercentPopulationVaccinated
 (
@@ -162,7 +165,8 @@ WHERE dea.continent is not NULL
 SELECT *, (RollingPeopleVaccinated/Population)*100 as VacsToPop
 FROM #PercentPopulationVaccinated
 
---Creating View to store Data for later
+	 
+--Creating View to store Data for later visualization
 
 Create View PercentPopulationVaccinated as
 SELECT dea.continent as continent, dea.location as location, dea.date as date, dea.population as population, vac.new_vaccinations, 
